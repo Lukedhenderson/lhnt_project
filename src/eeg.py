@@ -85,5 +85,8 @@ def get_eeg_prediction(model, X, y, user_in):
 
     return prediction, confidence
 
-def get_eeg_map():
+def get_eeg_map_rev():
     return REVERSE_LABEL_MAP
+
+def get_eeg_map():
+    return LABEL_MAP

@@ -81,5 +81,8 @@ def get_emg_prediction(model, covecs, labels, input_gest):
             print(f"Prediction error: {e}")
             return None, None
 
-def get_emg_map():
+def get_emg_map_rev():
     return REVERSE_LABEL_MAP
+
+def get_emg_map():
+    return LABEL_MAP
