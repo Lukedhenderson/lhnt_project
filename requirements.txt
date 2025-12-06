@@ -1,0 +1,9 @@
+geomstats==2.8.0
+scikeras
+scikit-learn==1.6.1
+pandas
+matplotlib
+mne
+joblib
+numpy
+scipy
