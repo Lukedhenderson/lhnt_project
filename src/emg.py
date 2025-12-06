@@ -12,12 +12,23 @@ N_ELECTRODES = 8    # data was collected with armband using 8 electrodes
 N_STEPS = 100       # in the data prep, time series were sampled in 100 steps
 MARGIN = 1000       # cuts off 
 LABEL_MAP = {"rock": 0, "scissors": 1, "paper": 2, "ok": 3}
-REVERSE_LABEL_MAP = {v: k for k, v in LABEL_MAP.items()} # reverses label map for easy lookup
+REVERSE_LABEL_MAP = {0: "rock", 1: "scissors", 2: "paper", 3: "ok"}
+
+# load EMG model
+def load_emg_model():
+    try:
+        print(f"Loading EMG model from {MODEL}...")
+        model = joblib.load(MODEL)
+        print("EMG model loaded successfully.\n")
+        return model
+    except FileNotFoundError:
+        print(f"Could not find {MODEL}.")
+        sys.exit(1)
 
 # loads and processes data
-def load_and_prep_data():
+def load_emg_data():
 
-    print("Loading dataset...")
+    print("\nLoading EMG dataset...")
     
     # Load raw data
     data = data_utils.load_emg()
@@ -38,42 +49,19 @@ def load_and_prep_data():
     # Return the covecs (input model expects) and labels so we can look them up
     return cov_data.covecs, cov_data.labels
 
-def main():
-    # load the model
-    try:
-        print(f"Loading model from {MODEL}...")
-        model = joblib.load(MODEL)
-        print("Model loaded successfully.")
-    except FileNotFoundError:
-        print(f"Could not find {MODEL}. Ensure it is in the same directory as this.")
-        sys.exit(1)
-
-    # prep data pool
-    covecs, labels = load_and_prep_data()
-
-    print("\nEMG model demo.")
-    print("Available inputs: rock, paper, scissors, ok")
-    print("Type 'exit' to quit.\n")
-
-    # demo loop
-    while True:
-        input_gest = input("Enter a gesture ('rock', 'paper', 'scissors', 'ok'): ").lower().strip()
-
-        if input_gest == 'exit':
-            print("Exiting...")
-            break
-
+def get_emg_prediction(model, covecs, labels, input_gest):
+        
         if input_gest not in LABEL_MAP:
-            print(f"Invalid input. Please choose from: {list(LABEL_MAP.keys())}")
-            continue
+            print(f"Invalid EMG input. Please choose from: {list(LABEL_MAP.keys())}")
+            return None, None
 
         # get list of matching indicies
         target_label = LABEL_MAP[input_gest]
         matching_indices = [i for i, label in enumerate(labels) if label == target_label]
         
         if not matching_indices:
-            print("Error: No samples found for this gesture in the dataset.")
-            continue
+            print("Error: No samples found for this EMG gesture in the dataset.")
+            return None, None
 
         # get random sample
         random_index = random.choice(matching_indices)
@@ -84,23 +72,14 @@ def main():
 
         try:
             prediciton = model.predict(sample_data_reshaped)[0]
-            prediction_name = REVERSE_LABEL_MAP.get(prediciton, "Unknown")
-            
-            # Get confidence
             probs = model.predict_proba(sample_data_reshaped)[0]
             confidence = probs[prediciton] * 100
 
-
-            print(f"\nResults: ")
-            print(f"Input Signal Source: Random '{input_gest}' sample from dataset (ID: {random_index})")
-            print(f"Model Prediction:    {prediction_name.upper()}")
-            print(f"Confidence:          {confidence:.2f}%")
-            
-            if prediction_name == input_gest:
-                print("Result:              CORRECT")
-            else:
-                print("Result:              INCORRECT")
-            print("n")
+            return prediciton, confidence
 
         except Exception as e:
             print(f"Prediction error: {e}")
+            return None, None
+
+def get_emg_map():
+    return REVERSE_LABEL_MAP
