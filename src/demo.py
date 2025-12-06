@@ -52,7 +52,7 @@ def main():
     eeg_label = get_eeg_map()
     
     print("\nThink of left or right hand...")
-    print("Then choose rock, paper, or siccors...")
+    print("Then choose rock, paper, or scissors...")
     
     esp_ip = "172.20.10.4" #change if hotspot ip changes
     print("Paired with ESP at", esp_ip)
@@ -72,13 +72,13 @@ def main():
             else:
                 break
 
-        count = 0
+        try_count = 0
         while (not model_correct(eeg_pred, eeg_label[eeg_data], emg_pred, emg_label[emg_data])):
-            count += 1
+            try_count += 1
             emg_pred, emg_confidence = get_emg_prediction(emg_model, X_emg, y_emg, emg_data)
             eeg_pred, eeg_confidence = get_eeg_prediction(eeg_model, X_eeg, y_eeg, eeg_data)
         
-        print(f"\nHad to retry model {count} times")
+        print(f"\nHad to retry model {try_count} times")
         print_and_set_results(eeg_pred, eeg_data, eeg_confidence, eeg_rev_label, "eeg")
         print_and_set_results(emg_pred, emg_data, emg_confidence, emg_rev_label, "emg")
                
