@@ -11,8 +11,8 @@ MODEL = './models/logreg_pipeline.joblib'
 N_ELECTRODES = 8    # data was collected with armband using 8 electrodes
 N_STEPS = 100       # in the data prep, time series were sampled in 100 steps
 MARGIN = 1000       # cuts off 
-LABEL_MAP = {"rock": 0, "scissors": 1, "paper": 2, "ok": 3}
-REVERSE_LABEL_MAP = {0: "rock", 1: "scissors", 2: "paper", 3: "ok"}
+LABEL_MAP = {"rock": 0, "paper": 1, "scissors": 2, "ok": 3}
+REVERSE_LABEL_MAP = {0: "rock", 1: "paper", 2: "scissors", 3: "ok"}
 
 # load EMG model
 def load_emg_model():
@@ -81,8 +81,5 @@ def get_emg_prediction(model, covecs, labels, input_gest):
             print(f"Prediction error: {e}")
             return None, None
 
-def get_emg_map_rev():
-    return REVERSE_LABEL_MAP
-
-def get_emg_map():
-    return LABEL_MAP
+def get_emg_maps():
+    return LABEL_MAP, REVERSE_LABEL_MAP

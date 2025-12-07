@@ -66,10 +66,13 @@ def send_motor_direction_packet(ip, msg):
             s.sendall(msg)
             s.settimeout(.1) # increase this number if the packet is getting cut short
             s.recv(4096)
+            return True
     except socket.timeout:
-        pass
+        print(f"Socket operation timeout\n")
+        return False
     except Exception as e:
-        print(f"[!] TCP connect/send to {ip}:{CONTROL_PORT} failed: {e}")
+        print(f"[!] TCP connect/send to {ip}:{CONTROL_PORT} failed: {e}\n")
+        return False
 
 def discover_esp():
     # create UDP socket & bind, same as you already do

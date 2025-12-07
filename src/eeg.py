@@ -1,16 +1,12 @@
 import sys
-import os
 import numpy as np
 import random
-import warnings
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from geomstats.geometry.spd_matrices import SPDMatrices, SPDAffineMetric
 from geomstats.learning.preprocessing import ToTangentSpace
-
-# warnings.filterwarnings("ignore", category=UserWarning)
 
 DATA = "./data/eeg_data.npz"
 LABEL_MAP = {"left": 0, "right": 1} 
@@ -85,8 +81,5 @@ def get_eeg_prediction(model, X, y, user_in):
 
     return prediction, confidence
 
-def get_eeg_map_rev():
-    return REVERSE_LABEL_MAP
-
-def get_eeg_map():
-    return LABEL_MAP
+def get_eeg_maps():
+    return LABEL_MAP, REVERSE_LABEL_MAP
